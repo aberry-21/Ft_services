@@ -14,11 +14,14 @@ kubectl apply -f ./srcs/metallb.yaml
 docker build -t nginx_image ./srcs/nginx
 kubectl apply -f ./srcs/nginx/nginx.yaml
 
+
+# docker build -t mysql_image ./srcs/mySQL
+# kubectl apply -f ./srcs/mySQL/mysql.yaml
+
 # open server page
-open http://192.168.99.201
+open http://192.168.99.101
 
 # eun the dashboard
 minikube dashboard
-
 
 

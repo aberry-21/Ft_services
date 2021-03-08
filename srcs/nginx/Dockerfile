@@ -15,7 +15,7 @@ RUN		chown -R www:www /www
 RUN		mkdir -p /run/nginx
 
 # Nginx config file and webpage
-COPY	nginx.conf /etc/nginx/conf.d
+COPY	nginx.conf /etc/nginx/conf.d/default.conf
 COPY	index.html /www/index.html
 
 # Create SSL key
@@ -27,5 +27,5 @@ RUN 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 # Go to server_start.sh where run nginx
 COPY	server_start.sh ./server_start.sh
 RUN		chmod +x /server_start.sh
-CMD		sh ./server_start.sh
+CMD		[ "sh", "server_start.sh" ]
 EXPOSE	80 443 22
