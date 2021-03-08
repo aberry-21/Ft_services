@@ -1,4 +1,4 @@
-# delete VM if allready exists
+# delete VM if already exists
 minikube delete
 
 # start VM
@@ -25,3 +25,4 @@ open http://192.168.99.101
 minikube dashboard
 
 
+docker build -t phpmyadmin_image ./srcs/phpMyAdmin

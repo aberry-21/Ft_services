@@ -9,10 +9,10 @@ RUN		apk update &&\
 RUN		adduser -D -g 'www' www
 
 # Setup web server files and permissions
-RUN		mkdir /www
-RUN		chown -R www:www /var/lib/nginx
-RUN		chown -R www:www /www
-RUN		mkdir -p /run/nginx
+RUN		mkdir /www;\
+		chown -R www:www /var/lib/nginx;\
+		chown -R www:www /www;\
+		mkdir -p /run/nginx
 
 # Nginx config file and webpage
 COPY	nginx.conf /etc/nginx/conf.d/default.conf

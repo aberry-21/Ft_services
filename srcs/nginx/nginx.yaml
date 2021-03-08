@@ -30,6 +30,12 @@ metadata:
     app: nginx
 spec:
   replicas: 1
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: 
+      maxUnavailable: 1
+      maxSurge: 1
   selector:
     matchLabels:
       app: nginx
