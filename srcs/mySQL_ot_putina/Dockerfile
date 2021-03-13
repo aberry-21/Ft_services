@@ -3,24 +3,26 @@
 #                                                         :::      ::::::::    #
 #    Dockerfile                                         :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aberry&lmittie <aberry>                    +#+  +:+       +#+         #
+#    By: aberry <aberry@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/03/13 16:45:03 by aberry&lmit       #+#    #+#              #
-#    Updated: 2021/03/13 19:33:57 by aberry&lmit      ###   ########.fr        #
+#    Created: 2020/12/12 14:04:43 by rmarguri          #+#    #+#              #
+#    Updated: 2021/03/08 16:38:06 by aberry           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-FROM    alpine:3.11.7
+FROM	alpine:3.11.7
 
-# Устанавливаем необходимые пакеты
-# RUN     apk update &&\
-#         apk add mysql \
-#         mysql-client\
-#         supervisor
+RUN		apk update && \
+		apk add openrc 
 
+RUN		apk add mysql mysql-client && \
+		mkdir "/run/mysqld" && \
+		chown -R mysql /run/mysqld
 
-# mysql_install_db --user=mysql --datadir=/var/lib/mysql
+COPY	./wordPressBD.sql ./start.sh ./baseBD.sql ./
 
-# rc-service mariadb start
+COPY	./my.cnf /etc/my.cnf
 
-# mysqladmin -u root password toor
+EXPOSE	3306
+
+CMD		[ "sh", "bd_start.sh" ]

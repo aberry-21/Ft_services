@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    nginx.yaml                                         :+:      :+:    :+:    #
+#    phpmyadmin.yaml                                    :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: aberry&lmittie <aberry>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/03/12 01:51:57 by aberry&lmit       #+#    #+#              #
-#    Updated: 2021/03/13 16:44:44 by aberry&lmit      ###   ########.fr        #
+#    Created: 2021/03/13 18:29:35 by aberry&lmit       #+#    #+#              #
+#    Updated: 2021/03/13 18:29:36 by aberry&lmit      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ apiVersion: v1
 kind: Service
 metadata:
   # Имя: определяет имя ресурса.
-  name: nginx-service
+  name: wordpress-service
   # Чтобы запросить назначение из определенного пула, прописываем эту строчку 
   annotations:
         metallb.universe.tf/allow-shared-ip: services
@@ -23,28 +23,24 @@ metadata:
 spec:
   # Selector: объект, содержащий свойства для выбора модулей.
   selector:
-    app: nginx
+    app: wordpress
   # Тип спецификации, мы выбираем LoadBalancer, потому что мы хотим сбалансировать нагрузку между модулями.
   type: LoadBalancer
   # Port: указывает порт, через который служба получает запросы.
   # TargetPort: порт, на который перенаправляются входящие запросы.
   # Protocol определяет связь.
   ports:
-    - name: http
+    - name: http-port-for-wordpress
       protocol: TCP
-      port: 80
-      targetPort: 80
-    - name: https
-      protocol: TCP
-      port: 443
-      targetPort: 443
+      port: 5050
+      targetPort: 5050
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: wordpress-deployment
   labels:
-    app: nginx
+    app: wordpress
 spec:
   # Replicas - это свойство объекта Spec развертывания, которое определяет, сколько подов мы хотим запустить.
   replicas: 1
@@ -61,19 +57,18 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: nginx
+      app: wordpress
   template:
     metadata:
       labels:
-        app: nginx
+        app: wordpress
     spec:
       containers:
-      - name: nginx
+      - name: wordpress
         # Image - это образ контейнера, который мы хотим запустить в этом поде.
-        image: nginx_image
+        image: wordpress_image
         # Отключаем возможность подтягивать image с dockerhub 
         imagePullPolicy: Never
         # Порт контейнера: порт, который прослушивает контейнер. Это всего лишь индикатор для читателя (отключение порта не ограничивает доступ).
         ports:
-        - containerPort: 80
-        - containerPort: 443
+        - containerPort: 5050
