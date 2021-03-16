@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Dockerfile                                         :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aberry&lmittie <aberry>                    +#+  +:+       +#+         #
+#    By: aberry <aberry>                            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/12 00:00:42 by aberry&lmit       #+#    #+#              #
-#    Updated: 2021/03/12 00:19:55 by aberry&lmit      ###   ########.fr        #
+#    Updated: 2021/03/16 21:34:12 by aberry           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ RUN     apk update;\
 # Установка phpMyAdmin и создание необходимых директорий 
 RUN     mkdir -p /www/ && \
         mkdir /run/nginx &&\
+        mkdir /www/phpmyadmin/tmp/ &&\
         chmod 744 /run/nginx &&\
         wget http://files.directadmin.com/services/all/phpMyAdmin/phpMyAdmin-5.0.2-all-languages.tar.gz && \
         tar zxvf phpMyAdmin-5.0.2-all-languages.tar.gz && \

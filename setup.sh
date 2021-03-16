@@ -20,8 +20,8 @@ kubectl apply -f ./srcs/phpMyAdmin/phpmyadmin.yaml
 docker build -t wordpress_image ./srcs/wordpress
 kubectl apply -f ./srcs/wordpress/wordpress.yaml
 
-# docker build -t mysql_image ./srcs/mySQL
-# kubectl apply -f ./srcs/mySQL/mysql.yaml
+docker build -t mysql_image ./srcs/mySQL
+kubectl apply -f ./srcs/mySQL/mysql.yaml
 
 # open server page
 open http://192.168.99.101
