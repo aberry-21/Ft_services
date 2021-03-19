@@ -6,7 +6,7 @@
 #    By: aberry <aberry>                            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/13 16:45:03 by aberry&lmit       #+#    #+#              #
-#    Updated: 2021/03/16 19:50:35 by aberry           ###   ########.fr        #
+#    Updated: 2021/03/19 23:06:07 by aberry           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,12 +17,20 @@ RUN     apk update &&\
         apk add mysql \
         mysql-client\
         supervisor\
+        libc6-compat\
         openrc
+
+# Установка telegraf
+RUN wget https://dl.influxdata.com/telegraf/releases/telegraf-1.17.0_linux_amd64.tar.gz &&\
+    tar -xf telegraf-1.17.0_linux_amd64.tar.gz --strip-components=2 -C / &&\
+    rm telegraf-1.17.0_linux_amd64.tar.gz
+COPY telegraf.conf /etc/telegraf/
 
 # Копируем необходимые базы данных и конфиги в образ 
 COPY    supervisord.conf /etc/supervisord.conf
 COPY    my.cnf /etc/my.cnf
 COPY    main_bd.sql ./main_bd.sql
+COPY    wordpress_bd.sql ./wordpress_bd.sql
 
 # Копируем инициализацию баз данных
 COPY    bd_init.sh /bd_init.sh

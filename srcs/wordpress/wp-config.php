@@ -15,7 +15,10 @@ define( 'DB_USER', 'aberry' );
 /** MySQL database password */
 define( 'DB_PASSWORD', 'root' );
 
-/** MySQL hostname */
+
+/****************************************************************************/
+/**************************Указываем хост нашей бд***************************/
+/****************************************************************************/
 define( 'DB_HOST', 'mysql-service:3306' );
 
 /** Database Charset to use in creating database tables. */

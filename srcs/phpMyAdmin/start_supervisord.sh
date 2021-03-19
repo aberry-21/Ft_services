@@ -3,14 +3,12 @@
 #                                                         :::      ::::::::    #
 #    start_supervisord.sh                               :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aberry&lmittie <aberry>                    +#+  +:+       +#+         #
+#    By: aberry <aberry>                            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/12 00:01:23 by aberry&lmit       #+#    #+#              #
-#    Updated: 2021/03/12 01:32:42 by aberry&lmit      ###   ########.fr        #
+#    Updated: 2021/03/19 17:51:35 by aberry           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
-#!/bin/sh
 
 # Запускаем supervisord
 

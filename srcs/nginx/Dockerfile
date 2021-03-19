@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Dockerfile                                         :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aberry&lmittie <aberry>                    +#+  +:+       +#+         #
+#    By: aberry <aberry>                            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/12 00:04:37 by aberry&lmit       #+#    #+#              #
-#    Updated: 2021/03/13 16:44:28 by aberry&lmit      ###   ########.fr        #
+#    Updated: 2021/03/19 23:06:43 by aberry           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,14 @@ FROM    alpine:3.11.7
 RUN     apk update &&\
         apk add openssl\
         nginx\
+        libc6-compat\
         supervisor
+
+# Установка telegraf
+RUN wget https://dl.influxdata.com/telegraf/releases/telegraf-1.17.0_linux_amd64.tar.gz &&\
+    tar -xf telegraf-1.17.0_linux_amd64.tar.gz --strip-components=2 -C / &&\
+    rm telegraf-1.17.0_linux_amd64.tar.gz
+COPY telegraf.conf /etc/telegraf/
 
 # Создаем пользователя 
 RUN     adduser -D -g 'www' www

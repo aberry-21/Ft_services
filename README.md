@@ -1,10 +1,8 @@
-### Kubernetes
+### Ft_services
 
-
-minikube start --vm-driver=<driver_name>
+## Kubernetes
 
 Откройте веб-панель Kubernetes в браузере: minikube dashboard
-
 Посмотреть информацию о Deployment: kubectl get deployments
 Посмотреть информацию о поде: kubectl get pods
 Посмотреть только что созданный сервис: kubectl get services
@@ -16,8 +14,15 @@ Supervisor — это система клиент/сервер, при помо�
 
 
 https://techviewleo.com/how-to-install-mariadb-on-alpine-linux/
+https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/
 
 
-asdf
-sdf
-asdfg
+
+
+## telegraf
+https://grafana.com/grafana/dashboards/928
+https://github.com/influxdata/telegraf/blob/master/plugins/inputs/docker/README.md
+https://github.com/influxdata/telegraf/tree/master/plugins/outputs/influxdb
+https://github.com/influxdata/telegraf/blob/master/plugins/inputs/cpu/README.md
+https://github.com/influxdata/telegraf/blob/master/plugins/inputs/disk/README.md
+https://qastack.ru/devops/2506/docker-in-kubernetes-deployment

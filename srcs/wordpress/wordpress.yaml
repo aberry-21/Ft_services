@@ -1,46 +1,23 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    phpmyadmin.yaml                                    :+:      :+:    :+:    #
+#    wordpress.yaml                                     :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aberry&lmittie <aberry>                    +#+  +:+       +#+         #
+#    By: aberry <aberry>                            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/13 18:29:35 by aberry&lmit       #+#    #+#              #
-#    Updated: 2021/03/13 18:29:36 by aberry&lmit      ###   ########.fr        #
+#    Updated: 2021/03/17 21:49:50 by aberry           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-apiVersion: v1
-# Kind: указывает тип ресурса Kubernetes, который мы хотим создать.
-kind: Service
-metadata:
-  # Имя: определяет имя ресурса.
-  name: wordpress-service
-  # Чтобы запросить назначение из определенного пула, прописываем эту строчку 
-  annotations:
-        metallb.universe.tf/allow-shared-ip: services
-# Spec - это объект, определяющий желаемое состояние ресурса.
-spec:
-  # Selector: объект, содержащий свойства для выбора модулей.
-  selector:
-    app: wordpress
-  # Тип спецификации, мы выбираем LoadBalancer, потому что мы хотим сбалансировать нагрузку между модулями.
-  type: LoadBalancer
-  # Port: указывает порт, через который служба получает запросы.
-  # TargetPort: порт, на который перенаправляются входящие запросы.
-  # Protocol определяет связь.
-  ports:
-    - name: http-port-for-wordpress
-      protocol: TCP
-      port: 5050
-      targetPort: 5050
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wordpress-deployment
   labels:
-    app: wordpress
+    app   : wordpress
+    env   : ft_services
+    owner : aberry
 spec:
   # Replicas - это свойство объекта Spec развертывания, которое определяет, сколько подов мы хотим запустить.
   replicas: 1
@@ -72,3 +49,28 @@ spec:
         # Порт контейнера: порт, который прослушивает контейнер. Это всего лишь индикатор для читателя (отключение порта не ограничивает доступ).
         ports:
         - containerPort: 5050
+---
+apiVersion: v1
+# Kind: указывает тип ресурса Kubernetes, который мы хотим создать.
+kind: Service
+metadata:
+  # Имя: определяет имя ресурса.
+  name: wordpress-service
+  # Чтобы запросить назначение из определенного пула, прописываем эту строчку 
+  annotations:
+        metallb.universe.tf/allow-shared-ip: services
+# Spec - это объект, определяющий желаемое состояние ресурса.
+spec:
+  # Selector: объект, содержащий свойства для выбора модулей.
+  selector:
+    app: wordpress
+  # Тип спецификации, мы выбираем LoadBalancer, чтобы получить айпи адрес к которому можно будет подключиться извне
+  type: LoadBalancer
+  # Port: указывает порт, через который служба получает запросы.
+  # TargetPort: порт, на который перенаправляются входящие запросы.
+  # Protocol определяет связь.
+  ports:
+    - name: http-port-for-wordpress
+      protocol: TCP
+      port: 5050
+      targetPort: 5050

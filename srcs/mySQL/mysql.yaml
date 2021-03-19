@@ -5,104 +5,97 @@
 #                                                     +:+ +:+         +:+      #
 #    By: aberry <aberry>                            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/03/13 18:29:35 by aberry&lmit       #+#    #+#              #
-#    Updated: 2021/03/16 21:48:37 by aberry           ###   ########.fr        #
+#    Created: 2021/03/13 18:29:35 by aberry            #+#    #+#              #
+#    Updated: 2021/03/17 21:49:50 by aberry           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-# Mandatory #
 apiVersion: v1
-
-# What type? #
+# Этот тип ссылается на том в нашей среде.
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-pvc
-  # Additional information #
+  name: mysql-pv-volume
   labels:
-      app  : mysql
-      env  : ft_service
-      owner: gdrive
+    app   : mysql
+    env   : ft_services
+    owner : aberry
 spec:
-  # Acess rights #
+  # Конфигурация тома
   accessModes:
   - ReadWriteOnce
-   # Configs # 
   resources:
     requests:
-      # Whats size? #
       storage: 1Gi
 ---
-# Mandatory #
 apiVersion: apps/v1
-
-# What type? #
 kind: Deployment
 metadata:
   name: mysql-deployment
-  # Additional information #
   labels:
     app  : mysql
-    env  : ft_service
-    owner: gdrive
+    env  : ft_services
+    owner: aberry
 spec:
-  # How many replicas? #
+# Replicas - это свойство объекта Spec развертывания, которое определяет, сколько подов мы хотим запустить.
   replicas: 1
-  # Whats pods to choose? #
+  # Новые поды становятся готовыми или доступными (по крайней мере, через MinReadySeconds).
+  minReadySeconds: 15
+  # Тип указывает стратегию, используемую в этом развертывании при переходе от текущей версии к следующей.
+  # Стратегия RollingUpdate обеспечивает нулевое время простоя при развертывании.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # После завершения работы одного модуля у нас все еще будет работать один модуль, таким образом сохраняя доступность нашего приложения
+      maxUnavailable: 1
+      # Определяет максимальное количество модулей, добавляемых к развертыванию
+      maxSurge: 1
   selector:
-    # Choose with labels: #
     matchLabels:
-      project: mysql
-  # Creating pods #
+      app: mysql
   template:
     metadata:
-      # Additional information #
       labels:
-        project: mysql
-    # Configs for containers #
+        app: mysql
     spec:
-      # Include volume #
       volumes:
-      - name: mysql-volume
+      - name: mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: mysql-pvc
+          claimName: mysql-pv-volume
       containers:
       - name           : mysql
-        # Image to be used #
+        # Image - это образ контейнера, который мы хотим запустить в этом поде.
         image          : mysql_image
-        # Turn of DockerHub #
+        # Отключаем возможность подтягивать image с dockerhub 
         imagePullPolicy: Never
-        # Open ports #
+        # Порт контейнера: порт, который прослушивает контейнер. Это всего лишь индикатор для читателя (отключение порта не ограничивает доступ).
         ports:
         - containerPort: 3306
-        # Storage #
+        # Определяем хранилище
         volumeMounts   :
         - mountPath: "/var/lib/mysql"
-          name     : mysql-volume
+          name     : mysql-persistent-storage
 ---
-# Mandatory #
 apiVersion: v1
-
-# What type? #
+# Kind: указывает тип ресурса Kubernetes, который мы хотим создать.
 kind: Service
 metadata:
+  # Имя: определяет имя ресурса.
   name: mysql-service
-  # Additional information #
   labels:
       app  : mysql
-      env  : ft_service
-      owner: gdrive
+      env  : ft_services
+      owner: aberry
+# Spec - это объект, определяющий желаемое состояние ресурса.
 spec:
-  # Access for other #
+  # Тип спецификации, мы выбираем ClusterIP, чтобы нельзя было подключиться извне
   type: ClusterIP
   selector:
-    # Access for what? #
-    project: mysql
+    app: mysql
+  # Port: указывает порт, через который служба получает запросы.
+  # TargetPort: порт, на который перенаправляются входящие запросы.
+  # Protocol определяет связь.
   ports:
-  - name      : http
-    # Redirect ports from #
+  - name      : http-for-mysql
+    protocol  : TCP
     port      : 3306
-    # Redirect port to #
     targetPort: 3306
-
-
-

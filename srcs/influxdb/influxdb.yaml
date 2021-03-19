@@ -1,25 +1,42 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    nginx.yaml                                         :+:      :+:    :+:    #
+#    influxdb.yaml                                      :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: aberry <aberry>                            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/03/12 01:51:57 by aberry&lmit       #+#    #+#              #
-#    Updated: 2021/03/17 21:49:50 by aberry           ###   ########.fr        #
+#    Created: 2021/03/13 18:29:35 by aberry            #+#    #+#              #
+#    Updated: 2021/03/19 23:25:55 by aberry           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+# Этот тип ссылается на том в нашей среде.
+kind: PersistentVolumeClaim
 metadata:
-  name: nginx-deployment
+  name: influxdb-pv-volume
   labels:
-    app   : nginx
+    app   : influxdb
     env   : ft_services
     owner : aberry
 spec:
-  # Replicas - это свойство объекта Spec развертывания, которое определяет, сколько подов мы хотим запустить.
+  # Конфигурация тома
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb-deployment
+  labels:
+    app  : influxdb
+    env  : ft_services
+    owner: aberry
+spec:
+# Replicas - это свойство объекта Spec развертывания, которое определяет, сколько подов мы хотим запустить.
   replicas: 1
   # Новые поды становятся готовыми или доступными (по крайней мере, через MinReadySeconds).
   minReadySeconds: 15
@@ -34,52 +51,51 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: nginx
+      app: influxdb
   template:
     metadata:
       labels:
-        app: nginx
+        app: influxdb
     spec:
+      volumes:
+      - name: influxdb-persistent-storage
+        persistentVolumeClaim:
+          claimName: influxdb-pv-volume
       containers:
-      - name: nginx
+      - name           : influxdb
         # Image - это образ контейнера, который мы хотим запустить в этом поде.
-        image: nginx_image
+        image          : influxdb_image
         # Отключаем возможность подтягивать image с dockerhub 
         imagePullPolicy: Never
         # Порт контейнера: порт, который прослушивает контейнер. Это всего лишь индикатор для читателя (отключение порта не ограничивает доступ).
         ports:
-        - containerPort: 80
-        - containerPort: 443
+        - containerPort: 3306
+        # Определяем хранилище
+        volumeMounts   :
+        - mountPath: "/var/lib/influxdb"
+          name     : influxdb-persistent-storage
 ---
 apiVersion: v1
 # Kind: указывает тип ресурса Kubernetes, который мы хотим создать.
 kind: Service
 metadata:
   # Имя: определяет имя ресурса.
-  name: nginx-service
+  name: influxdb-service
   labels:
-    app  : mysql
-    env  : ft_services
-    owner: aberry
-  # Чтобы запросить назначение из определенного пула, прописываем эту строчку 
-  annotations:
-        metallb.universe.tf/allow-shared-ip: services
+      app  : influxdb
+      env  : ft_services
+      owner: aberry
 # Spec - это объект, определяющий желаемое состояние ресурса.
 spec:
-  # Selector: объект, содержащий свойства для выбора модулей.
+  # Тип спецификации, мы выбираем ClusterIP, чтобы нельзя было подключиться извне
+  type: ClusterIP
   selector:
-    app: nginx
-  # Тип спецификации, мы выбираем LoadBalancer, чтобы получить айпи адрес к которому можно будет подключиться извне
-  type: LoadBalancer
+    app: influxdb
   # Port: указывает порт, через который служба получает запросы.
   # TargetPort: порт, на который перенаправляются входящие запросы.
   # Protocol определяет связь.
   ports:
-    - name: http
-      protocol: TCP
-      port: 80
-      targetPort: 80
-    - name: https
-      protocol: TCP
-      port: 443
-      targetPort: 443
+  - name      : http-for-influxdb
+    protocol  : TCP
+    port      : 8086
+    targetPort: 8086

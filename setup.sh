@@ -1,13 +1,12 @@
-# delete VM if already exists
+# Удаляем предыдущий minikube если он есть
 minikube delete
 
-# start VM
+# Запускаем новый
 minikube start --vm-driver=virtualbox
 
-# sets up the docker env variables
+# Устанавливаем docker env
 eval $(minikube docker-env)
 
-# config metallb (load balancer)
 minikube addons enable metallb
 kubectl apply -f ./srcs/metallb.yaml
 
@@ -23,9 +22,14 @@ kubectl apply -f ./srcs/wordpress/wordpress.yaml
 docker build -t mysql_image ./srcs/mySQL
 kubectl apply -f ./srcs/mySQL/mysql.yaml
 
-# open server page
-open http://192.168.99.101
+docker build -t ftps_image ./srcs/FTPS
+kubectl apply -f ./srcs/FTPS/ftps.yaml
 
-# eun the dashboard
+docker build -t grafana_image ./srcs/grafana
+kubectl apply -f ./srcs/grafana/grafana.yaml
+
+docker build -t influxdb_image ./srcs/influxdb
+kubectl apply -f ./srcs/influxdb/influxdb.yaml
+
+# Открываем дашборд
 minikube dashboard
-

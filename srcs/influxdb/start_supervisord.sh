@@ -6,9 +6,11 @@
 #    By: aberry <aberry>                            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/12 00:01:23 by aberry&lmit       #+#    #+#              #
-#    Updated: 2021/03/19 23:16:28 by aberry           ###   ########.fr        #
+#    Updated: 2021/03/19 17:45:14 by aberry           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+#!/bin/sh
 
 # Запускаем supervisord
 supervisord -c /etc/supervisord.conf

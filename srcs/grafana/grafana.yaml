@@ -1,21 +1,21 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    nginx.yaml                                         :+:      :+:    :+:    #
+#    grafana.yaml                                     :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: aberry <aberry>                            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/03/12 01:51:57 by aberry&lmit       #+#    #+#              #
-#    Updated: 2021/03/17 21:49:50 by aberry           ###   ########.fr        #
+#    Created: 2021/03/13 18:29:35 by aberry&lmit       #+#    #+#              #
+#    Updated: 2021/03/19 23:02:19 by aberry           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: grafana-deployment
   labels:
-    app   : nginx
+    app   : grafana
     env   : ft_services
     owner : aberry
 spec:
@@ -34,33 +34,28 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: nginx
+      app: grafana
   template:
     metadata:
       labels:
-        app: nginx
+        app: grafana
     spec:
       containers:
-      - name: nginx
+      - name: grafana
         # Image - это образ контейнера, который мы хотим запустить в этом поде.
-        image: nginx_image
+        image: grafana_image
         # Отключаем возможность подтягивать image с dockerhub 
         imagePullPolicy: Never
         # Порт контейнера: порт, который прослушивает контейнер. Это всего лишь индикатор для читателя (отключение порта не ограничивает доступ).
         ports:
-        - containerPort: 80
-        - containerPort: 443
+        - containerPort: 3000
 ---
 apiVersion: v1
 # Kind: указывает тип ресурса Kubernetes, который мы хотим создать.
 kind: Service
 metadata:
   # Имя: определяет имя ресурса.
-  name: nginx-service
-  labels:
-    app  : mysql
-    env  : ft_services
-    owner: aberry
+  name: grafana-service
   # Чтобы запросить назначение из определенного пула, прописываем эту строчку 
   annotations:
         metallb.universe.tf/allow-shared-ip: services
@@ -68,18 +63,14 @@ metadata:
 spec:
   # Selector: объект, содержащий свойства для выбора модулей.
   selector:
-    app: nginx
+    app: grafana
   # Тип спецификации, мы выбираем LoadBalancer, чтобы получить айпи адрес к которому можно будет подключиться извне
   type: LoadBalancer
   # Port: указывает порт, через который служба получает запросы.
   # TargetPort: порт, на который перенаправляются входящие запросы.
   # Protocol определяет связь.
   ports:
-    - name: http
+    - name: http-port-for-grafana
       protocol: TCP
-      port: 80
-      targetPort: 80
-    - name: https
-      protocol: TCP
-      port: 443
-      targetPort: 443
+      port: 3000
+      targetPort: 3000
